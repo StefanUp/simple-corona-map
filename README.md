@@ -9,7 +9,7 @@
 
 ### Clone
 
-- Clone this repo to your local machine using `https://github.com/StefanUp/CoronaMap`
+- Clone this repo to your local machine using `https://github.com/StefanUp/simple-corona-map`
 
 ### Setup
 
