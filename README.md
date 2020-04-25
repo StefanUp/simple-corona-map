@@ -1,3 +1,5 @@
+![alt text](https://raw.githubusercontent.com/StefanUp/simple-corona-map/master/preview/wide.png)
+
 # Simple Corona Map 
 
 > Simple Map with React, Leaflet, Axios, Bootstrap
