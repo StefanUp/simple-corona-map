@@ -11,27 +11,26 @@ export default class GeoMap extends React.Component {
         this.state = {
             defaultPosition: [40,10],
             options: {
+                enableHighAccuracy: true,
                 maximumAge: 0,
                 timeout: 5000,
-                enableHighAccuracy: true,
             },
-            coronaData: {}
+            coronaData: {},
+            countries: [],
+            loaded: false
         };
     }
 
     componentDidMount() {
-        this.getCoronaStats();
-    }
-
-    getCoronaStats = () => {
-        axios
-            .get('https://corona.lmao.ninja/v2/all')
-            .then(data => this.setState({ coronaData: data.data }))
-            .catch(err => {
+        axios.all([axios.get('https://corona.lmao.ninja/v2/all'), axios.get('https://corona.lmao.ninja/v2/countries')])
+            .then(axios.spread((...responses) => {
+                this.setState({ coronaData: responses[0].data });
+                this.setState({ countries: responses[1].data, loaded: true })
+            })).catch(err => {
                 console.log(err);
                 return null;
-            });
-    };
+            })
+    }
 
     render() {
         return (
@@ -41,6 +40,7 @@ export default class GeoMap extends React.Component {
                     zoom={1.5}
                     maxZoom={6}
                     minZoom={1.5}
+                    tap={false}
                     animate={false}
                     dragging={true}
                     zoomControl={true}
@@ -58,22 +58,25 @@ export default class GeoMap extends React.Component {
                             fillColor: "#223C6E",
                         })}
                     />
-                    <AllMarkers />
+
+                    {this.state.loaded ? <AllMarkers countries={this.state.countries} /> : ''}
+
                 </LeafletMap>
-                <div class="container p-4">
-                    <h2 class="text-center font-weight-bold p-4">Worldwide</h2>
-                    <div class="row h-100 ">
-                        <div class="col-4">
-                            <h3 class="text-center">Cases:</h3>
-                            <p class="text-center font-weight-light">{new Intl.NumberFormat('de-DE').format(this.state.coronaData.cases)}</p>
+
+                <div className="container p-4">
+                    <h2 className="text-center font-weight-bold p-4">Worldwide</h2>
+                    <div className="row h-100 ">
+                        <div className="col-4">
+                            <h3 className="text-center">Cases:</h3>
+                            <p className="text-center font-weight-light">{new Intl.NumberFormat('de-DE').format(this.state.coronaData.cases)}</p>
                         </div>
-                        <div class="col-4">
-                            <h4 class="text-center">Active:</h4>
-                            <p class="text-center font-weight-light">{new Intl.NumberFormat('de-DE').format(this.state.coronaData.active)}</p>
+                        <div className="col-4">
+                            <h4 className="text-center">Active:</h4>
+                            <p className="text-center font-weight-light">{new Intl.NumberFormat('de-DE').format(this.state.coronaData.active)}</p>
                         </div>
-                        <div class="col-4">
-                            <h4 class="text-center">Deaths:</h4>
-                            <p class="text-center font-weight-light">{new Intl.NumberFormat('de-DE').format(this.state.coronaData.deaths)}</p>
+                        <div className="col-4">
+                            <h4 className="text-center">Deaths:</h4>
+                            <p className="text-center font-weight-light">{new Intl.NumberFormat('de-DE').format(this.state.coronaData.deaths)}</p>
                         </div>
                     </div>
                 </div>
